@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
-import { motion } from "framer-motion";
+import { motion, Transition } from "framer-motion";
 
 export default function AboutMe() {
   const { resolvedTheme } = useTheme();
@@ -38,7 +38,7 @@ export default function AboutMe() {
     visible: { opacity: 1, y: 0 },
   };
 
-  const transition = {
+  const transition: Transition = {
     duration: 1.5,
     ease: "easeOut",
   };
