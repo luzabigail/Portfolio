@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7e6d3;
+  --foreground: #2a2354;
+  --surface: #95cdd2;
+  --button: #06042a;
+  --surface-2: #737dc2;
+  --border: #c6896d;
+}
+
+.dark {
+  --background: #02031b;
+  --foreground: #f7b272;
+  --surface: #f4ba73;
+  --surface-2: #15183a;
+  --border: #2a2d52;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-button: var(--button);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-header: var(--font-great-vibes);
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+html,
+body {
+
+  min-height: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+ body {
+  font-family: var(--font-josefin);
+} 
+
+.sectionAboutMe {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 10;
+  height: 220px;
+  background: linear-gradient(
+    0deg,
+    var(--background)10%,
+    rgb(255 255 255 / 0%) 50%
+  );
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.backgroundProjects {
+  min-height: 100vh;
+  min-width: 100vw;
+  background-image: url("/background-day-1.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+html,
+body,
+body *,
+body *::before,
+body *::after {
+  transition-property: background-color, color, border-color, fill, stroke, opacity, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  body,
+  body *,
+  body *::before,
+  body *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
