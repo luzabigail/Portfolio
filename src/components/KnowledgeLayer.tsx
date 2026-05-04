@@ -92,7 +92,7 @@ export default function Knowledge() {
     <>
       <div className="mt-20">
         <h1 className="text-center text-7xl [font-family:var(--font-great-vibes)]">
-          Tecnolgías
+          Tecnologías
         </h1>
         <section
           id="tecnologias"

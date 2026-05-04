@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
@@ -32,12 +33,14 @@
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "tailwindcss": "^4.2.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-
-   "compilerOptions": {
-    "types": ["jest", "@testing-library/jest-dom", "node"]
+  "compilerOptions": {
+    "types": [
+      "jest",
+      "@testing-library/jest-dom",
+      "node"
+    ]
   }
 }
-
- 
