@@ -1,4 +1,4 @@
-// 1. Añade 'act' al import de testing-library
+import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import FloatingMenu from "../FloatingMenu";
 
@@ -9,33 +9,41 @@ jest.mock("../theme-toggle", () => {
 });
 
 jest.mock("framer-motion", () => {
-  const React = require("react");
-
-  // Función de ayuda para evitar pasar props de framer-motion al DOM
-  const cleanProps = (props: any) => {
-    const { initial, animate, exit, transition, ...validDOMProps } = props;
-    return validDOMProps;
+  // 1. Usamos Record<string, unknown> en lugar de 'any' para satisfacer a TypeScript
+  const cleanProps = (props: Record<string, unknown>) => {
+    const copy = { ...props };
+    // 2. En lugar de extraer las variables y dejarlas sin usar (unused-vars),
+    // simplemente las borramos del objeto copiado.
+    delete copy.initial;
+    delete copy.animate;
+    delete copy.exit;
+    delete copy.transition;
+    return copy;
   };
+
+  // 3. Quitamos el 'require' de React y el 'forwardRef' (tu componente no usa refs en el menú).
+  // 4. Usamos funciones con nombre (ej: "function MockHeader") para arreglar el error "display-name".
+  type MotionProps = { children?: React.ReactNode; [key: string]: unknown };
 
   return {
     motion: {
-      header: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <header ref={ref} {...cleanProps(props)}>
-          {children}
-        </header>
-      )),
-      nav: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <nav ref={ref} {...cleanProps(props)}>
-          {children}
-        </nav>
-      )),
-      div: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <div ref={ref} {...cleanProps(props)}>
-          {children}
-        </div>
-      )),
+      header: function MockHeader({ children, ...props }: MotionProps) {
+        return <header {...cleanProps(props)}>{children}</header>;
+      },
+      nav: function MockNav({ children, ...props }: MotionProps) {
+        return <nav {...cleanProps(props)}>{children}</nav>;
+      },
+      div: function MockDiv({ children, ...props }: MotionProps) {
+        return <div {...cleanProps(props)}>{children}</div>;
+      },
     },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
+    AnimatePresence: function MockAnimatePresence({
+      children,
+    }: {
+      children?: React.ReactNode;
+    }) {
+      return <>{children}</>;
+    },
   };
 });
 
@@ -145,138 +153,3 @@ describe("FloatingMenu Component", () => {
     expect(screen.queryByText("Proyectos")).not.toBeInTheDocument();
   });
 });
-// import {
-//   render,
-//   screen,
-//   fireEvent,
-//   act,
-//   waitFor,
-// } from "@testing-library/react";
-// import FloatingMenu from "../FloatingMenu";
-
-// jest.mock("next/link", () => ({
-//   __esModule: true,
-//   default: ({ children, href, ...props }: any) => (
-//     <a href={href} {...props}>
-//       {children}
-//     </a>
-//   ),
-// }));
-
-// jest.mock("../theme-toggle", () => ({
-//   __esModule: true,
-//   default: () => <button>Theme Toggle</button>,
-// }));
-
-// jest.mock("framer-motion", () => ({
-//   motion: {
-//     header: ({ children, ...props }: any) => (
-//       <header {...props}>{children}</header>
-//     ),
-//     nav: ({ children, ...props }: any) => <nav {...props}>{children}</nav>,
-//     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-//   },
-//   AnimatePresence: ({ children }: any) => <>{children}</>,
-// }));
-
-// jest.mock("lucide-react", () => ({
-//   Menu: () => <span data-testid="menu-icon">Menu</span>,
-//   X: () => <span data-testid="x-icon">X</span>,
-// }));
-
-// describe("FloatingMenu", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-
-//     Object.defineProperty(window, "innerWidth", {
-//       writable: true,
-//       configurable: true,
-//       value: 1200,
-//     });
-
-//     Object.defineProperty(window, "scrollY", {
-//       writable: true,
-//       configurable: true,
-//       value: 0,
-//     });
-//   });
-
-//   it("pasa a modo compacto al hacer scroll mayor a 60", async () => {
-//     render(<FloatingMenu />);
-
-//     act(() => {
-//       Object.defineProperty(window, "scrollY", {
-//         writable: true,
-//         configurable: true,
-//         value: 100,
-//       });
-
-//       window.dispatchEvent(new Event("scroll"));
-//     });
-
-//     await waitFor(() => {
-//       expect(
-//         screen.getByRole("button", { name: /abrir menú/i }),
-//       ).toBeInTheDocument();
-//     });
-//   });
-
-//   it("muestra botón de menú en mobile", () => {
-//     window.innerWidth = 500;
-
-//     render(<FloatingMenu />);
-
-//     window.dispatchEvent(new Event("resize"));
-
-//     expect(
-//       screen.getByRole("button", { name: /abrir menú/i }),
-//     ).toBeInTheDocument();
-
-//     expect(screen.getByTestId("menu-icon")).toBeInTheDocument();
-//   });
-
-//   it("abre el menú mobile al hacer click", () => {
-//     window.innerWidth = 500;
-
-//     render(<FloatingMenu />);
-
-//     window.dispatchEvent(new Event("resize"));
-
-//     const button = screen.getByRole("button", { name: /abrir menú/i });
-
-//     fireEvent.click(button);
-
-//     expect(screen.getByTestId("x-icon")).toBeInTheDocument();
-
-//     expect(screen.getByRole("link", { name: "Proyectos" })).toBeInTheDocument();
-//     expect(screen.getByRole("link", { name: "Contacto" })).toBeInTheDocument();
-//     expect(
-//       screen.getByRole("link", { name: "Tecnologías" }),
-//     ).toBeInTheDocument();
-//   });
-
-//   it("cierra el menú mobile al hacer click en un link", () => {
-//     window.innerWidth = 500;
-
-//     render(<FloatingMenu />);
-
-//     window.dispatchEvent(new Event("resize"));
-
-//     fireEvent.click(screen.getByRole("button", { name: /abrir menú/i }));
-
-//     fireEvent.click(screen.getByRole("link", { name: "Contacto" }));
-
-//     expect(screen.getByTestId("menu-icon")).toBeInTheDocument();
-//   });
-
-//   it("pasa a modo compacto al hacer scroll mayor a 60", () => {
-//     render(<FloatingMenu />);
-
-//     window.scrollY = 100;
-//     window.dispatchEvent(new Event("scroll"));
-
-//     expect(
-//       screen.getByRole("button", { name: /abrir menú/i }),
-//     ).toBeInTheDocument();
-//   });
-// });
